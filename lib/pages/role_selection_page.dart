@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'admin_setup_page.dart'; // next page for admin flow
-import 'user_scan_page.dart';  // next page for user flow
+import 'package:google_fonts/google_fonts.dart'; // next page for admin flow
+import 'user_scan_page.dart'; // next page for user flow
+import 'admin_home.dart';
 
 class RoleSelectionPage extends StatelessWidget {
   const RoleSelectionPage({super.key});
@@ -34,10 +34,7 @@ class RoleSelectionPage extends StatelessWidget {
               Text(
                 "Are you creating a queue or joining one?",
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  color: Colors.white70,
-                  fontSize: 16,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white70, fontSize: 16),
               ),
 
               const SizedBox(height: 60),
@@ -52,9 +49,7 @@ class RoleSelectionPage extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const AdminSetupPage(),
-                    ),
+                    MaterialPageRoute(builder: (context) => const AdminHome()),
                   );
                 },
               ),

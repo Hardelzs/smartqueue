@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'admin_navbar.dart';
 
 class AdminSetupPage extends StatefulWidget {
   const AdminSetupPage({super.key});
@@ -223,7 +222,7 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
           ),
         ),
       ),
-      bottomNavigationBar: const AdminNavBar(),
+      // bottomNavigationBar: const AdminNavBar(),
     );
   }
 

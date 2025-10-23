@@ -1,41 +1,37 @@
 import 'package:flutter/material.dart';
-import './admin_setup_page.dart';
-import './admin_monitor_page.dart';
+import 'admin_setup_page.dart';
+import 'admin_monitor_page.dart';
 
-class AdminNavBar extends StatefulWidget {
-  const AdminNavBar({super.key});
+class AdminHome extends StatefulWidget {
+  const AdminHome({super.key});
 
   @override
-  State<AdminNavBar> createState() => _AdminNavBarState();
+  State<AdminHome> createState() => _AdminHomeState();
 }
 
-class _AdminNavBarState extends State<AdminNavBar> {
+class _AdminHomeState extends State<AdminHome> {
   int _selectedIndex = 0;
 
-  // 👇 All your pages live here
   final List<Widget> _pages = const [
-    AdminSetupPage(), // 🏠 Home/Setup page
+    AdminSetupPage(),
     AdminMonitorPage(),
-    // Replace QueueDetailsPage with placeholders matching your 4 nav items
-    Center(child: Text('Scan Page')),
-    Center(child: Text('Profile Page')),
+    Placeholder(), // For Scan page
+    Placeholder(), // For Profile page
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_selectedIndex],
-      bottomNavigationBar: _buildBottomNavBar(), //
+      bottomNavigationBar: _buildBottomNavBar(),
       backgroundColor: Colors.grey[100],
     );
   }
 
-  // 👇 This builds the bottom navbar design
   Widget _buildBottomNavBar() {
     return Container(
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-      height: 75,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
@@ -68,29 +64,21 @@ class _AdminNavBarState extends State<AdminNavBar> {
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ), // Adjusted padding
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isActive ? Colors.teal.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: isActive ? Colors.teal : Colors.grey[600],
-              size: 28, // Increased icon size from default 24
-            ),
+            Icon(icon, color: isActive ? Colors.teal : Colors.grey[600]),
             if (isActive) ...[
-              const SizedBox(width: 8), // Slightly increased spacing
+              const SizedBox(width: 6),
               Text(
                 label,
                 style: const TextStyle(
                   color: Colors.teal,
                   fontWeight: FontWeight.w600,
-                  fontSize: 16, // Added font size to match new proportions
                 ),
               ),
             ],
