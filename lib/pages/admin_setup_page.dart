@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'admin_navbar.dart';
 
 class AdminSetupPage extends StatefulWidget {
   const AdminSetupPage({super.key});
@@ -40,7 +41,7 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      backgroundColor: const Color(0xFFF7F7F7),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -49,7 +50,7 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
           "Create Queue",
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
       ),
@@ -66,7 +67,7 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -74,10 +75,32 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
                 // Organization Name Field
                 TextFormField(
                   controller: _orgController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration("Organization Name"),
-                  validator: (value) =>
-                      value!.isEmpty ? "Please enter an organization name" : null,
+                  style: const TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                    labelText: "Organization Name",
+                    labelStyle: const TextStyle(color: Colors.black),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    isDense: true, // optional: reduces vertical padding
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                  ),
+                  cursorColor: Colors.black,
+                  validator: (value) => value!.isEmpty
+                      ? "Please enter an organization name"
+                      : null,
                 ),
 
                 const SizedBox(height: 20),
@@ -85,33 +108,69 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
                 // Duration Field
                 TextFormField(
                   controller: _durationController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration("Duration (in minutes)"),
-                  keyboardType: TextInputType.number,
-                  validator: (value) =>
-                      value!.isEmpty ? "Please enter queue duration" : null,
+                  style: const TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                    labelText: "Duration (hours)",
+                    labelStyle: const TextStyle(color: Colors.black),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    isDense: true, // optional: reduces vertical padding
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                  ),
+                  cursorColor: Colors.black,
+                  validator: (value) => value!.isEmpty
+                      ? "Please enter an organization name"
+                      : null,
                 ),
 
                 const SizedBox(height: 40),
 
                 // Generate Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurpleAccent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 12,
+                  ), // moves it down a little
+                  child: Container(
+                    width: double.infinity,
+                    height: 65,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF191B1C), Color(0xFF444248)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: Colors.white, width: 3),
                     ),
-                    onPressed: _generateQR,
-                    child: Text(
-                      "Generate QR Code",
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      onPressed: _generateQR,
+                      child: Text(
+                        "Generate QR Code",
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -129,7 +188,7 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
                           style: GoogleFonts.poppins(
                             fontSize: 18,
                             fontWeight: FontWeight.w500,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -143,7 +202,7 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
                             data: _generatedCode!,
                             version: QrVersions.auto,
                             size: 200,
-                            foregroundColor: Colors.white,
+                            foregroundColor: Colors.black,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -151,7 +210,7 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
                           "Code: $_generatedCode",
                           textAlign: TextAlign.center,
                           style: GoogleFonts.poppins(
-                            color: Colors.white70,
+                            color: Colors.black,
                             fontSize: 14,
                           ),
                         ),
@@ -164,6 +223,7 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
           ),
         ),
       ),
+      bottomNavigationBar: const AdminNavBar(),
     );
   }
 
