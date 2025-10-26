@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; // next page for admin flow
-import 'user_scan_page.dart'; // next page for user flow
+import 'package:smartqueue/pages/user_home.dart';
 import 'admin_home.dart';
 
 class RoleSelectionPage extends StatelessWidget {
@@ -67,7 +67,7 @@ class RoleSelectionPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const UserScanPage(),
+                      builder: (context) => const UserHome(),
                     ),
                   );
                 },
