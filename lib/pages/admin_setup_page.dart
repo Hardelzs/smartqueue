@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AdminSetupPage extends StatefulWidget {
   const AdminSetupPage({super.key});
@@ -212,6 +213,60 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
                             color: Colors.black,
                             fontSize: 14,
                           ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                // Add printing logic here
+                                print('Print QR Code');
+                              },
+                              icon: const Icon(
+                                Icons.print,
+                                color: Colors.white,
+                              ),
+                              label: Text(
+                                'Print',
+                                style: GoogleFonts.poppins(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.teal,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Share.share('Queue Code: $_generatedCode');
+                              },
+                              icon: const Icon(
+                                Icons.share,
+                                color: Colors.white,
+                              ),
+                              label: Text(
+                                'Share',
+                                style: GoogleFonts.poppins(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.teal,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
