@@ -14,7 +14,6 @@ class _UserHomeState extends State<UserHome> {
 
   final List<Widget> _pages = const [
     UserScanPage(),
-    Placeholder(),
     Placeholder(), // For Scan page
     Placeholder(), // For Profile page
   ];
@@ -46,10 +45,9 @@ class _UserHomeState extends State<UserHome> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _navItem(Icons.home, "Home", 0),
+          _navItem(Icons.qr_code_scanner, "Scan", 0),
           _navItem(Icons.list, "Queue", 1),
-          _navItem(Icons.qr_code_scanner, "Scan", 2),
-          _navItem(Icons.person, "Profile", 3),
+          _navItem(Icons.person, "Profile", 2),
         ],
       ),
     );

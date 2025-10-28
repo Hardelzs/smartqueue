@@ -52,7 +52,7 @@ class _UserScanPageState extends State<UserScanPage> {
                 const SizedBox(height: 20),
                 const Text(
                   "Align the QR code within the frame",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black87),
                 ),
                 const SizedBox(height: 20),
                 Expanded(
