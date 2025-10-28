@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smartqueue/pages/user_queue_infopage.dart';
 import 'package:smartqueue/pages/user_scan_page.dart';
 
 
@@ -14,7 +15,7 @@ class _UserHomeState extends State<UserHome> {
 
   final List<Widget> _pages = const [
     UserScanPage(),
-    Placeholder(), // For Scan page
+    UserQueueInfoPage(), // For Scan page
     Placeholder(), // For Profile page
   ];
 
