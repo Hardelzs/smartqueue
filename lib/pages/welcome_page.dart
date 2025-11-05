@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:smartqueue/pages/login_page.dart';
 import 'role_selection_page.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -112,7 +113,7 @@ class _WelcomePageState extends State<WelcomePage>
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const RoleSelectionPage(),
+                              builder: (context) => const LoginPage(),
                             ),
                           );
                         },

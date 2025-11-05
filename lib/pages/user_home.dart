@@ -15,7 +15,9 @@ class _UserHomeState extends State<UserHome> {
 
   final List<Widget> _pages = const [
     UserScanPage(),
-    UserQueueInfoPage(), // For Scan page
+    UserQueueInfoPage(
+      estimatedWait: Duration(minutes: 20),
+    ), // For Scan page
     Placeholder(), // For Profile page
   ];
 

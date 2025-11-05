@@ -12,7 +12,8 @@ class UserQueueInfoPage extends StatelessWidget {
     this.queueName = "Cafe Delight Queue",
     this.branchName = "Downtown Branch",
     this.totalPeople = 15,
-    this.userPosition = 5, required this.estimatedWait,
+    this.userPosition = 5, 
+    this.estimatedWait = const Duration(minutes: 20),
   });
 
   @override
