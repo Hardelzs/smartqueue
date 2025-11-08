@@ -20,48 +20,46 @@ class _SignupPageState extends State<SignupPage> {
 
   bool _loading = false;
 
-  Future<void> _signup() async {
-    if (_usernameController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        _firstnameController.text.isEmpty ||
-        _lastnameController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill all required fields")),
-      );
+  Future<void> _handleSignup() async {
+    final username = _usernameController.text.trim();
+    final email = _emailController.text.trim();
+    final firstName = _firstnameController.text.trim();
+    final lastName = _lastnameController.text.trim();
+    final organization = _orgController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if ([username, email, firstName, lastName, password].any((field) => field.isEmpty)) {
+      _showMessage("Please fill all required fields");
       return;
     }
 
     setState(() => _loading = true);
 
     try {
-      final res = await ApiService.signup(
-        username: _usernameController.text.trim(),
-        email: _emailController.text.trim(),
-        firstName: _firstnameController.text.trim(),
-        lastName: _lastnameController.text.trim(),
-        organization: _orgController.text.trim(),
-        password: _passwordController.text.trim(),
+      final response = await ApiService.signup(
+        username: username,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        organization: organization,
+        password: password,
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Signup successful! Welcome ${res['username'] ?? ''}"),
-        ),
-      );
+      _showMessage("Signup successful! Welcome ${response['username'] ?? ''}");
 
-      // Navigate to login page
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const LoginPage()),
       );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Signup failed: $e")),
-      );
+    } catch (error) {
+      _showMessage("Signup failed: $error");
     } finally {
       setState(() => _loading = false);
     }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -73,6 +71,72 @@ class _SignupPageState extends State<SignupPage> {
     _orgController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller, {bool obscure = false}) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      style: const TextStyle(color: Colors.black),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.grey),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+      ),
+      cursorColor: Colors.black,
+    );
+  }
+
+  Widget _buildSignupButton() {
+    return Container(
+      width: double.infinity,
+      height: 65,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF191B1C), Color(0xFF444248)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white, width: 3),
+      ),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        onPressed: _loading ? null : _handleSignup,
+        child: _loading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Text("Sign Up", style: TextStyle(fontSize: 16, color: Colors.white)),
+      ),
+    );
+  }
+
+  Widget _buildLoginLink() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+        );
+      },
+      child: Text(
+        "Already have an account? Login",
+        style: GoogleFonts.poppins(
+          color: Colors.blueAccent,
+          fontSize: 14,
+        ),
+      ),
+    );
   }
 
   @override
@@ -94,101 +158,25 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
               const SizedBox(height: 20),
-
-              _buildField("Username", _usernameController),
+              _buildTextField("Username", _usernameController),
               const SizedBox(height: 17),
-              _buildField("Email", _emailController),
+              _buildTextField("Email", _emailController),
               const SizedBox(height: 17),
-              _buildField("First name", _firstnameController),
+              _buildTextField("First name", _firstnameController),
               const SizedBox(height: 17),
-              _buildField("Last name", _lastnameController),
+              _buildTextField("Last name", _lastnameController),
               const SizedBox(height: 17),
-              _buildField("Organization", _orgController),
+              _buildTextField("Organization", _orgController),
               const SizedBox(height: 17),
-              _buildField("Password", _passwordController, obscure: true),
-
+              _buildTextField("Password", _passwordController, obscure: true),
               const SizedBox(height: 25),
-
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Container(
-                  width: double.infinity,
-                  height: 65,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF191B1C), Color(0xFF444248)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.white, width: 3),
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    onPressed: _loading ? null : _signup,
-                    child: _loading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            "Sign Up",
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                  ),
-                ),
-              ),
-
+              _buildSignupButton(),
               const SizedBox(height: 18),
-
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginPage()),
-                  );
-                },
-                child: Text(
-                  "Already have an account? Login",
-                  style: GoogleFonts.poppins(
-                    color: Colors.blueAccent,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
+              _buildLoginLink(),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildField(
-    String label,
-    TextEditingController controller, {
-    bool obscure = false,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscure,
-      style: const TextStyle(color: Colors.black),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Colors.grey),
-        enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-        border: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-      ),
-      cursorColor: Colors.black,
     );
   }
 }

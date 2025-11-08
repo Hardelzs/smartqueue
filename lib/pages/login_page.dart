@@ -16,40 +16,35 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   bool _loading = false;
 
-  Future<void> _login() async {
-    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter your username and password")),
-      );
+  Future<void> _handleLogin() async {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+      _showMessage("Please enter your username and password");
       return;
     }
 
     setState(() => _loading = true);
+
     try {
-      final res = await ApiService.login(
-        _usernameController.text.trim(),
-        _passwordController.text.trim(),
-      );
+      final response = await ApiService.login(username, password);
 
-      // Optional: save token if backend provides one
-      // final token = res['token'] ?? '';
+      _showMessage("Welcome back, ${response['username'] ?? 'User'}!");
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Welcome back, ${res['username'] ?? 'User'}!")),
-      );
-
-      // Navigate to next page (Role selection)
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const RoleSelectionPage()),
       );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login failed: $e")),
-      );
+    } catch (error) {
+      _showMessage("Login failed: $error");
     } finally {
       setState(() => _loading = false);
     }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -57,6 +52,72 @@ class _LoginPageState extends State<LoginPage> {
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller, {bool obscure = false}) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      style: const TextStyle(color: Colors.black),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.grey),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+      ),
+      cursorColor: Colors.black,
+    );
+  }
+
+  Widget _buildLoginButton() {
+    return Container(
+      width: double.infinity,
+      height: 65,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF191B1C), Color(0xFF444248)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white, width: 3),
+      ),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        onPressed: _loading ? null : _handleLogin,
+        child: _loading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Text("Login", style: TextStyle(fontSize: 16, color: Colors.white)),
+      ),
+    );
+  }
+
+  Widget _buildSignupLink() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const SignupPage()),
+        );
+      },
+      child: Text(
+        "Don't have an account? Sign up",
+        style: GoogleFonts.poppins(
+          color: Colors.blueAccent,
+          fontSize: 14,
+        ),
+      ),
+    );
   }
 
   @override
@@ -85,88 +146,16 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 30),
-
-            _buildField("Username", _usernameController),
+            _buildTextField("Username", _usernameController),
             const SizedBox(height: 17),
-            _buildField("Password", _passwordController, obscure: true),
+            _buildTextField("Password", _passwordController, obscure: true),
             const SizedBox(height: 25),
-
-            Container(
-              width: double.infinity,
-              height: 65,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF191B1C), Color(0xFF444248)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white, width: 3),
-              ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                onPressed: _loading ? null : _login,
-                child: _loading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        "Login",
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
-              ),
-            ),
-
+            _buildLoginButton(),
             const SizedBox(height: 18),
-
-            GestureDetector(
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SignupPage()),
-                );
-              },
-              child: Text(
-                "Don't have an account? Sign up",
-                style: GoogleFonts.poppins(
-                  color: Colors.blueAccent,
-                  fontSize: 14,
-                ),
-              ),
-            ),
+            _buildSignupLink(),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildField(
-    String label,
-    TextEditingController controller, {
-    bool obscure = false,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscure,
-      style: const TextStyle(color: Colors.black),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Colors.grey),
-        enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-        border: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-      ),
-      cursorColor: Colors.black,
     );
   }
 }
