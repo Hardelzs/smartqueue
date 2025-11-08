@@ -17,26 +17,46 @@ class _LoginPageState extends State<LoginPage> {
   bool _loading = false;
 
   Future<void> _login() async {
+    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter your username and password")),
+      );
+      return;
+    }
+
     setState(() => _loading = true);
     try {
       final res = await ApiService.login(
         _usernameController.text.trim(),
         _passwordController.text.trim(),
       );
-      // You can store token or user info if backend sends it
+
+      // Optional: save token if backend provides one
+      // final token = res['token'] ?? '';
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Welcome ${res['username'] ?? 'User'}")),
+        SnackBar(content: Text("Welcome back, ${res['username'] ?? 'User'}!")),
       );
 
+      // Navigate to next page (Role selection)
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const RoleSelectionPage()),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Login failed: $e")),
+      );
     } finally {
       setState(() => _loading = false);
     }
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -59,65 +79,53 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 8),
             Text(
               "Login to continue",
-              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
             ),
             const SizedBox(height: 30),
 
-            TextField(
-              controller: _usernameController,
-              style: TextStyle(
-                fontFamily: GoogleFonts.poppins().fontFamily,
-                color: Colors.black,
-              ),
-              decoration: const InputDecoration(labelText: "Username"),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _passwordController,
-              style: TextStyle(
-                fontFamily: GoogleFonts.poppins().fontFamily,
-                color: Colors.black,
-              ),
-              decoration: const InputDecoration(labelText: "Password"),
-              obscureText: true,
-            ),
-            const SizedBox(height: 24),
+            _buildField("Username", _usernameController),
+            const SizedBox(height: 17),
+            _buildField("Password", _passwordController, obscure: true),
+            const SizedBox(height: 25),
 
-            Padding(
-              padding: const EdgeInsets.only(top: 12), // moves it down a little
-              child: Container(
-                width: double.infinity,
-                height: 65,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF191B1C), Color(0xFF444248)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.white, width: 3),
+            Container(
+              width: double.infinity,
+              height: 65,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF191B1C), Color(0xFF444248)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.white, width: 3),
+              ),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  onPressed: _loading ? null : _login,
-                  child: _loading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("Login", style: TextStyle(fontSize: 16, color: Colors.white)),
                 ),
+                onPressed: _loading ? null : _login,
+                child: _loading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        "Login",
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
               ),
             ),
+
             const SizedBox(height: 18),
 
             GestureDetector(
               onTap: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (_) => const SignupPage()),
                 );
@@ -133,6 +141,32 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildField(
+    String label,
+    TextEditingController controller, {
+    bool obscure = false,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      style: const TextStyle(color: Colors.black),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.grey),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+        border: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+      ),
+      cursorColor: Colors.black,
     );
   }
 }

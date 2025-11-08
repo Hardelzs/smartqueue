@@ -21,16 +21,28 @@ class _SignupPageState extends State<SignupPage> {
   bool _loading = false;
 
   Future<void> _signup() async {
+    if (_usernameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _firstnameController.text.isEmpty ||
+        _lastnameController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all required fields")),
+      );
+      return;
+    }
+
     setState(() => _loading = true);
+
     try {
-      final res = await ApiService.signup({
-        "username": _usernameController.text.trim(),
-        "email": _emailController.text.trim(),
-        "firstname": _firstnameController.text.trim(),
-        "lastname": _lastnameController.text.trim(),
-        "organization": _orgController.text.trim(),
-        "password": _passwordController.text.trim(),
-      });
+      final res = await ApiService.signup(
+        username: _usernameController.text.trim(),
+        email: _emailController.text.trim(),
+        firstName: _firstnameController.text.trim(),
+        lastName: _lastnameController.text.trim(),
+        organization: _orgController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -38,12 +50,15 @@ class _SignupPageState extends State<SignupPage> {
         ),
       );
 
+      // Navigate to login page
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const LoginPage()),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Signup failed: $e")),
+      );
     } finally {
       setState(() => _loading = false);
     }
@@ -159,17 +174,15 @@ class _SignupPageState extends State<SignupPage> {
     return TextField(
       controller: controller,
       obscureText: obscure,
-      style: const TextStyle(color: Colors.black), // Input text in black
+      style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: Colors.grey),
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey), // Single-line border
+          borderSide: BorderSide(color: Colors.grey),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.grey,
-          ), // No color change on focus
+          borderSide: BorderSide(color: Colors.grey),
         ),
         border: const UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.grey),
