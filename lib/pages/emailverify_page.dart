@@ -10,85 +10,145 @@ class VerifyEmailPage extends StatefulWidget {
   State<VerifyEmailPage> createState() => _VerifyEmailPageState();
 }
 
-class _VerifyEmailPageState extends State<VerifyEmailPage> {
-  final TextEditingController _codeController = TextEditingController();
+class _VerifyEmailPageState extends State<VerifyEmailPage>
+    with SingleTickerProviderStateMixin {
+  final List<TextEditingController> _controllers =
+      List.generate(6, (_) => TextEditingController());
+  final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
+
+  late AnimationController _shakeController;
+  late Animation<double> _shakeAnimation;
+
   bool _isLoading = false;
-  String? _errorMessage;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _shakeAnimation = Tween<double>(begin: 0, end: 10)
+        .chain(CurveTween(curve: Curves.elasticIn))
+        .animate(_shakeController);
+  }
+
+  void _triggerErrorFeedback(String message) {
+    setState(() => _hasError = true);
+    _shakeController.forward(from: 0);
+    for (final controller in _controllers) {
+      controller.clear();
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
 
   Future<void> _verifyCode() async {
-    final code = _codeController.text.trim();
+    final code = _controllers.map((c) => c.text).join();
 
-    if (code.length != 6) {
-      setState(() {
-        _errorMessage = "Please enter a valid 6-digit code.";
-      });
+    if (code.length != 6 || code.contains(RegExp(r'\D'))) {
+      _triggerErrorFeedback("Please enter a valid 6-digit code.");
       return;
     }
 
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
+      _hasError = false;
     });
 
     try {
       final response = await http.post(
         Uri.parse('https://queueless-7el4.onrender.com/verify-email'),
-        body: {
-          'email': widget.email,
-          'code': code,
-        },
+        body: {'email': widget.email, 'code': code},
       );
 
       if (response.statusCode == 200) {
-        // ✅ Success
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: Text("Success"),
-            content: Text("Your email has been verified!"),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/home');
-                },
-                child: Text("Continue"),
-              ),
-            ],
-          ),
-        );
+        Navigator.pushReplacementNamed(context, '/home');
       } else {
-        // ❌ Failure
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: Text("Invalid Code"),
-            content: Text("The code you entered is incorrect."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/signup');
-                },
-                child: Text("Back to Signup"),
-              ),
-            ],
-          ),
-        );
+        _triggerErrorFeedback("The code you entered is incorrect.");
       }
     } catch (e) {
-      _showMessage("Verification failed: $e");
+      _triggerErrorFeedback("Verification failed: $e");
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  Widget _buildCodeInput() {
+    return AnimatedBuilder(
+      animation: _shakeAnimation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(_shakeAnimation.value, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(6, (index) {
+              if (index == 3) {
+                return Row(
+                  children: [
+                    const SizedBox(width: 12),
+                    const Text("-", style: TextStyle(fontSize: 24)),
+                    const SizedBox(width: 12),
+                    _buildDigitBox(index),
+                  ],
+                );
+              }
+              return _buildDigitBox(index);
+            }),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDigitBox(int index) {
+    return Container(
+      width: 40,
+      margin: const EdgeInsets.symmetric(horizontal: 6),
+      child: TextField(
+        controller: _controllers[index],
+        focusNode: _focusNodes[index],
+        keyboardType: TextInputType.number,
+        textAlign: TextAlign.center,
+        maxLength: 1,
+        style: const TextStyle(fontSize: 20, color: Colors.black),
+        decoration: InputDecoration(
+          counterText: "",
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: _hasError ? Colors.red : Colors.grey,
+              width: 2,
+            ),
+          ),
+        ),
+        onChanged: (value) {
+          if (value.isNotEmpty && index < 5) {
+            _focusNodes[index + 1].requestFocus();
+          } else if (value.isEmpty && index > 0) {
+            _focusNodes[index - 1].requestFocus();
+          }
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Verify Your Email")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: const Text("Verify Your Email")),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -96,26 +156,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           children: [
             Text(
               "A 6-digit code has been sent to ${widget.email}.",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            TextField(
-              controller: _codeController,
-              keyboardType: TextInputType.number,
-              maxLength: 6,
-              decoration: InputDecoration(
-                labelText: "Enter Verification Code",
-                border: OutlineInputBorder(),
-                errorText: _errorMessage,
-              ),
-            ),
+            _buildCodeInput(),
             const SizedBox(height: 24),
             _isLoading
-                ? CircularProgressIndicator()
+                ? const CircularProgressIndicator()
                 : ElevatedButton(
                     onPressed: _verifyCode,
-                    child: Text("Verify"),
+                    child: const Text("Verify"),
                   ),
           ],
         ),

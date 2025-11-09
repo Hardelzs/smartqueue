@@ -4,7 +4,10 @@ import 'package:http/http.dart' as http;
 class ApiService {
   static const String _baseUrl = 'https://queueless-7el4.onrender.com';
 
-  static Future<Map<String, dynamic>> login(String username, String password) async {
+  static Future<Map<String, dynamic>> login(
+    String username,
+    String password,
+  ) async {
     final url = Uri.parse('$_baseUrl/api/v1/login');
     final response = await http.post(
       url,
@@ -27,9 +30,8 @@ class ApiService {
     required String organization,
     required String password,
   }) async {
-    final url = Uri.parse('$_baseUrl/api/v1/register');
     final response = await http.post(
-      url,
+      Uri.parse('$_baseUrl/api/v1/register'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'username': username,
@@ -41,10 +43,12 @@ class ApiService {
       }),
     );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 201 && data['status'] == 201) {
+      return data; // success
     } else {
-      throw Exception('Signup failed: ${response.body}');
+      throw Exception(data['message'] ?? 'Signup failed');
     }
   }
 }
