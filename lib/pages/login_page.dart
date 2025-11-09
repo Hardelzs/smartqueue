@@ -16,14 +16,21 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   bool _loading = false;
 
+  String? _usernameError;
+  String? _passwordError;
+  String? _loginError;
+
   Future<void> _handleLogin() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (username.isEmpty || password.isEmpty) {
-      _showMessage("Please enter your username and password");
-      return;
-    }
+    setState(() {
+      _usernameError = username.isEmpty ? "Please enter your username" : null;
+      _passwordError = password.isEmpty ? "Please enter your password" : null;
+      _loginError = null;
+    });
+
+    if (_usernameError != null || _passwordError != null) return;
 
     setState(() => _loading = true);
 
@@ -37,14 +44,18 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (_) => const RoleSelectionPage()),
       );
     } catch (error) {
-      _showMessage("Login failed: $error");
+      setState(() {
+        _loginError = "Username or password is incorrect";
+      });
     } finally {
       setState(() => _loading = false);
     }
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -54,22 +65,36 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {bool obscure = false}) {
-    return TextField(
-      controller: controller,
-      obscureText: obscure,
-      style: const TextStyle(color: Colors.black),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Colors.grey),
-        enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
+  Widget _buildTextField(String label, TextEditingController controller, String? errorText, {bool obscure = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          obscureText: obscure,
+          style: const TextStyle(color: Colors.black),
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: const TextStyle(color: Colors.grey),
+            errorText: errorText,
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: errorText != null ? Colors.red : Colors.grey),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: errorText != null ? Colors.red : Colors.grey),
+            ),
+          ),
+          cursorColor: Colors.black,
         ),
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-      ),
-      cursorColor: Colors.black,
+        if (errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              errorText,
+              style: const TextStyle(color: Colors.red, fontSize: 12),
+            ),
+          ),
+      ],
     );
   }
 
@@ -145,10 +170,19 @@ class _LoginPageState extends State<LoginPage> {
                 color: Colors.grey,
               ),
             ),
+            if (_loginError != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(
+                  _loginError!,
+                  style: const TextStyle(color: Colors.red, fontSize: 13),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             const SizedBox(height: 30),
-            _buildTextField("Username", _usernameController),
+            _buildTextField("Username", _usernameController, _usernameError),
             const SizedBox(height: 17),
-            _buildTextField("Password", _passwordController, obscure: true),
+            _buildTextField("Password", _passwordController, _passwordError, obscure: true),
             const SizedBox(height: 25),
             _buildLoginButton(),
             const SizedBox(height: 18),

@@ -48,7 +48,7 @@ class _WelcomePageState extends State<WelcomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -65,7 +65,7 @@ class _WelcomePageState extends State<WelcomePage>
                       height: 140,
                       width: 140,
                       decoration: BoxDecoration(
-                        color: Colors.white10,
+                        color: Colors.black,
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: const Icon(Icons.qr_code_2,
@@ -80,7 +80,7 @@ class _WelcomePageState extends State<WelcomePage>
                       style: GoogleFonts.poppins(
                         fontSize: 36,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ),
 
@@ -92,19 +92,29 @@ class _WelcomePageState extends State<WelcomePage>
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: 16,
-                        color: Colors.white70,
+                        color: Colors.grey,
                       ),
                     ),
 
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 40),
 
                     // Continue Button
-                    SizedBox(
+                    Container(
                       width: double.infinity,
-                      height: 55,
+                      height: 65,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF191B1C), Color(0xFF444248)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ), //
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: Colors.white, width: 3),
+                      ),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurpleAccent,
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
