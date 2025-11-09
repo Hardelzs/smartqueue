@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:smartqueue/pages/emailverify_page.dart';
 import '../services/api_service.dart';
 import 'login_page.dart';
 
@@ -20,46 +21,64 @@ class _SignupPageState extends State<SignupPage> {
 
   bool _loading = false;
 
-  Future<void> _handleSignup() async {
-    final username = _usernameController.text.trim();
-    final email = _emailController.text.trim();
-    final firstName = _firstnameController.text.trim();
-    final lastName = _lastnameController.text.trim();
-    final organization = _orgController.text.trim();
-    final password = _passwordController.text.trim();
+Future<void> _handleSignup() async {
+  final username = _usernameController.text.trim();
+  final email = _emailController.text.trim();
+  final firstName = _firstnameController.text.trim();
+  final lastName = _lastnameController.text.trim();
+  final organization = _orgController.text.trim();
+  final password = _passwordController.text.trim();
 
-    if ([username, email, firstName, lastName, password].any((field) => field.isEmpty)) {
-      _showMessage("Please fill all required fields");
-      return;
-    }
-
-    setState(() => _loading = true);
-
-    try {
-      final response = await ApiService.signup(
-        username: username,
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        organization: organization,
-        password: password,
-      );
-
-      _showMessage("Signup successful! Welcome ${response['username'] ?? ''}");
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginPage()),
-      );
-    } catch (error) {
-      _showMessage("Signup failed: $error");
-    } finally {
-      setState(() => _loading = false);
-    }
+  if ([username, email, firstName, lastName, password].any((field) => field.isEmpty)) {
+    _showMessage("Please fill all required fields");
+    return;
   }
 
+  setState(() => _loading = true);
+
+  try {
+    final response = await ApiService.signup(
+      username: username,
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      organization: organization,
+      password: password,
+    );
+
+    // Show confirmation dialog
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("Signup Successful"),
+        content: Text("A verification code has been sent to your email."),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // close dialog
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => VerifyEmailPage(email: email),
+                ),
+              );
+            },
+            child: Text("Verify Now"),
+          ),
+        ],
+      ),
+    );
+  } catch (error) {
+    _showMessage("Signup failed: $error");
+  } finally {
+    setState(() => _loading = false);
+  }
+}
+
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -73,7 +92,11 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {bool obscure = false}) {
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller, {
+    bool obscure = false,
+  }) {
     return TextField(
       controller: controller,
       obscureText: obscure,
@@ -116,7 +139,10 @@ class _SignupPageState extends State<SignupPage> {
         onPressed: _loading ? null : _handleSignup,
         child: _loading
             ? const CircularProgressIndicator(color: Colors.white)
-            : const Text("Sign Up", style: TextStyle(fontSize: 16, color: Colors.white)),
+            : const Text(
+                "Sign Up",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
       ),
     );
   }
@@ -131,10 +157,7 @@ class _SignupPageState extends State<SignupPage> {
       },
       child: Text(
         "Already have an account? Login",
-        style: GoogleFonts.poppins(
-          color: Colors.blueAccent,
-          fontSize: 14,
-        ),
+        style: GoogleFonts.poppins(color: Colors.blueAccent, fontSize: 14),
       ),
     );
   }
@@ -180,3 +203,5 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 }
+
+
