@@ -20,65 +20,64 @@ class _SignupPageState extends State<SignupPage> {
   final _passwordController = TextEditingController();
 
   bool _loading = false;
+  String? _errorMessage;
 
-Future<void> _handleSignup() async {
-  final username = _usernameController.text.trim();
-  final email = _emailController.text.trim();
-  final firstName = _firstnameController.text.trim();
-  final lastName = _lastnameController.text.trim();
-  final organization = _orgController.text.trim();
-  final password = _passwordController.text.trim();
+  Future<void> _handleSignup() async {
+    final username = _usernameController.text.trim();
+    final email = _emailController.text.trim();
+    final firstName = _firstnameController.text.trim();
+    final lastName = _lastnameController.text.trim();
+    final organization = _orgController.text.trim();
+    final password = _passwordController.text.trim();
 
-  if ([username, email, firstName, lastName, password].any((field) => field.isEmpty)) {
-    _showMessage("Please fill all required fields");
-    return;
-  }
+    if ([username, email, firstName, lastName, password].any((field) => field.isEmpty)) {
+      setState(() => _errorMessage = "Please fill all required fields");
+      return;
+    }
 
-  setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _errorMessage = null;
+    });
 
-  try {
-    final response = await ApiService.signup(
-      username: username,
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
-      organization: organization,
-      password: password,
-    );
+    try {
+      final response = await ApiService.signup(
+        username: username,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        organization: organization,
+        password: password,
+      );
 
-    // Show confirmation dialog
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text("Signup Successful"),
-        content: Text("A verification code has been sent to your email."),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // close dialog
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => VerifyEmailPage(email: email),
-                ),
-              );
-            },
-            child: Text("Verify Now"),
-          ),
-        ],
-      ),
-    );
-  } catch (error) {
-    _showMessage("Signup failed: $error");
-  } finally {
-    setState(() => _loading = false);
-  }
-}
-
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Signup Successful"),
+          content: const Text("A verification code has been sent to your email."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => VerifyEmailPage(username: username),
+                  ),
+                );
+              },
+              child: const Text("Verify Now"),
+            ),
+          ],
+        ),
+      );
+    } catch (error) {
+      setState(() {
+        _errorMessage = "Signup failed: ${error.toString().replaceAll('Exception:', '').trim()}";
+      });
+    } finally {
+      setState(() => _loading = false);
+    }
   }
 
   @override
@@ -92,11 +91,7 @@ Future<void> _handleSignup() async {
     super.dispose();
   }
 
-  Widget _buildTextField(
-    String label,
-    TextEditingController controller, {
-    bool obscure = false,
-  }) {
+  Widget _buildTextField(String label, TextEditingController controller, {bool obscure = false}) {
     return TextField(
       controller: controller,
       obscureText: obscure,
@@ -148,17 +143,30 @@ Future<void> _handleSignup() async {
   }
 
   Widget _buildLoginLink() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginPage()),
-        );
-      },
-      child: Text(
-        "Already have an account? Login",
-        style: GoogleFonts.poppins(color: Colors.blueAccent, fontSize: 14),
-      ),
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const LoginPage()),
+            );
+          },
+          child: Text(
+            "Already have an account? Login",
+            style: GoogleFonts.poppins(color: Colors.blueAccent, fontSize: 14),
+          ),
+        ),
+        if (_errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              _errorMessage!,
+              style: const TextStyle(color: Colors.red, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+          ),
+      ],
     );
   }
 
@@ -203,5 +211,3 @@ Future<void> _handleSignup() async {
     );
   }
 }
-
-
