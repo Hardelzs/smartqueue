@@ -40,7 +40,13 @@ class _SignupPageState extends State<SignupPage> {
     final organization = _orgController.text.trim();
     final password = _passwordController.text.trim();
 
-    if ([username, email, firstName, lastName, password].any((field) => field.isEmpty)) {
+    if ([
+      username,
+      email,
+      firstName,
+      lastName,
+      password,
+    ].any((field) => field.isEmpty)) {
       setState(() => _errorMessage = "Please fill all required fields");
       return;
     }
@@ -60,37 +66,37 @@ class _SignupPageState extends State<SignupPage> {
         password: password,
       );
 
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text("Signup Successful"),
-          content: const Text("A verification code has been sent to your email."),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => VerifyEmailPage(username: username),
-                  ),
-                );
-              },
-              child: const Text("Verify Now"),
-            ),
-          ],
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Verification code sent to your email"),
+          duration: Duration(seconds: 2),
         ),
       );
+
+      // Navigate directly to VerifyEmailPage after successful signup
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => VerifyEmailPage(username: username),
+          ),
+        );
+      }
     } catch (error) {
       setState(() {
-        _errorMessage = "Signup failed: ${error.toString().replaceAll('Exception:', '').trim()}";
+        _errorMessage =
+            "Signup failed: ${error.toString().replaceAll('Exception:', '').trim()}";
       });
     } finally {
       setState(() => _loading = false);
     }
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {bool obscure = false}) {
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller, {
+    bool obscure = false,
+  }) {
     return TextField(
       controller: controller,
       obscureText: obscure,

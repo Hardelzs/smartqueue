@@ -4,7 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'login_page.dart';
 
-const String API_BASE = 'https://queueless-7el4.onrender.com'; // adjust if needed
+const String API_BASE =
+    'https://queueless-7el4.onrender.com'; // adjust if needed
 
 class ResetPasswordPage extends StatefulWidget {
   final String email;
@@ -53,18 +54,32 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       final res = await http.post(
         Uri.parse('$API_BASE/api/v1/reset-password'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': widget.email, 'code': code, 'newPassword': password}),
+        body: jsonEncode({
+          'email': widget.email,
+          'code': code,
+          'newPassword': password,
+        }),
       );
 
       if (res.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset successful. Please login.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password reset successful. Please login.'),
+          ),
+        );
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const LoginPage()),
           (route) => false,
         );
       } else {
-        setState(() => _error = 'Reset failed. Check code and try again.');
+        // Log the response body for debugging
+        final responseBody = jsonDecode(res.body);
+        setState(
+          () => _error =
+              responseBody['message'] ??
+              'Reset failed. Check code and try again.',
+        );
       }
     } catch (e) {
       setState(() => _error = 'Request failed: $e');
@@ -89,24 +104,45 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Enter code and new password', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600)),
+              Text(
+                'Enter code and new password',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: _codeController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Verification code', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                decoration: InputDecoration(
+                  labelText: 'Verification code',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: 'New password', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                decoration: InputDecoration(
+                  labelText: 'New password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _confirmController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: 'Confirm password', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                decoration: InputDecoration(
+                  labelText: 'Confirm password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),
@@ -118,8 +154,17 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: _loading ? null : _resetPassword,
-                  style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                  child: _loading ? const CircularProgressIndicator(color: Colors.white) : Text('Reset password', style: GoogleFonts.poppins(fontSize: 16)),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: _loading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          'Reset password',
+                          style: GoogleFonts.poppins(fontSize: 16),
+                        ),
                 ),
               ),
             ],

@@ -86,6 +86,10 @@ class _ForgotPasswordRequestPageState extends State<ForgotPasswordRequestPage> {
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontFamily: GoogleFonts.poppins().fontFamily,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
