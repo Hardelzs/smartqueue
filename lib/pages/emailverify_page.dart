@@ -84,7 +84,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage>
 
     try {
       final response = await http.post(
-        Uri.parse('https://queueless-7el4.onrender.com/api/v1/verify-user'),
+        Uri.parse('https://queueless-7el4.onrender.com/api/v1/verify-code'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({"username": widget.username, "code": code}),
       );

@@ -12,15 +12,25 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
+  String? _errorMessage;
   final _firstnameController = TextEditingController();
   final _lastnameController = TextEditingController();
+  bool _loading = false;
   final _orgController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _usernameController = TextEditingController();
 
-  bool _loading = false;
-  String? _errorMessage;
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _firstnameController.dispose();
+    _lastnameController.dispose();
+    _orgController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> _handleSignup() async {
     final username = _usernameController.text.trim();
@@ -78,17 +88,6 @@ class _SignupPageState extends State<SignupPage> {
     } finally {
       setState(() => _loading = false);
     }
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _emailController.dispose();
-    _firstnameController.dispose();
-    _lastnameController.dispose();
-    _orgController.dispose();
-    _passwordController.dispose();
-    super.dispose();
   }
 
   Widget _buildTextField(String label, TextEditingController controller, {bool obscure = false}) {

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:smartqueue/pages/role_selection_page.dart';
 import '../services/api_service.dart';
 import 'signup_page.dart';
+import 'verifypassword_page.dart'; // added import
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -53,9 +54,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -65,7 +66,12 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, String? errorText, {bool obscure = false}) {
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller,
+    String? errorText, {
+    bool obscure = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -78,10 +84,14 @@ class _LoginPageState extends State<LoginPage> {
             labelStyle: const TextStyle(color: Colors.grey),
             errorText: errorText,
             enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: errorText != null ? Colors.red : Colors.grey),
+              borderSide: BorderSide(
+                color: errorText != null ? Colors.red : Colors.grey,
+              ),
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: errorText != null ? Colors.red : Colors.grey),
+              borderSide: BorderSide(
+                color: errorText != null ? Colors.red : Colors.grey,
+              ),
             ),
           ),
           cursorColor: Colors.black,
@@ -122,7 +132,10 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: _loading ? null : _handleLogin,
         child: _loading
             ? const CircularProgressIndicator(color: Colors.white)
-            : const Text("Login", style: TextStyle(fontSize: 16, color: Colors.white)),
+            : const Text(
+                "Login",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
       ),
     );
   }
@@ -137,10 +150,22 @@ class _LoginPageState extends State<LoginPage> {
       },
       child: Text(
         "Don't have an account? Sign up",
-        style: GoogleFonts.poppins(
-          color: Colors.blueAccent,
-          fontSize: 14,
-        ),
+        style: GoogleFonts.poppins(color: Colors.blueAccent, fontSize: 14),
+      ),
+    );
+  }
+
+  Widget _buildForgotLink() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ForgotPasswordRequestPage()),
+        );
+      },
+      child: Text(
+        "Forgot password?",
+        style: GoogleFonts.poppins(color: Colors.blueAccent, fontSize: 14),
       ),
     );
   }
@@ -165,10 +190,7 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 8),
             Text(
               "Login to continue",
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
+              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
             ),
             if (_loginError != null)
               Padding(
@@ -182,7 +204,14 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 30),
             _buildTextField("Username", _usernameController, _usernameError),
             const SizedBox(height: 17),
-            _buildTextField("Password", _passwordController, _passwordError, obscure: true),
+            _buildTextField(
+              "Password",
+              _passwordController,
+              _passwordError,
+              obscure: true,
+            ),
+            const SizedBox(height: 8),
+            Align(alignment: Alignment.centerRight, child: _buildForgotLink()),
             const SizedBox(height: 25),
             _buildLoginButton(),
             const SizedBox(height: 18),
