@@ -19,6 +19,7 @@ class _UserHomeState extends State<UserHome> {
       estimatedWait: Duration(minutes: 20),
     ), // For Scan page
     Placeholder(), // For Profile page
+    
   ];
 
   @override
