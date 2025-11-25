@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:smartqueue/pages/admin/admin_emaiverify_page.dart';
 import 'package:smartqueue/pages/admin/admin_login_page.dart';
 
 const String API_BASE =
@@ -73,7 +74,9 @@ class _SignupPageState extends State<SignupPage> {
         if (mounted) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const AdminLoginPage()),
+            MaterialPageRoute(
+              builder: (_) =>  AdminEmaiverifyPage(email: email,)
+            ),
           );
         }
       } else {
