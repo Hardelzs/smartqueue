@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:smartqueue/pages/admin/admin_login_page.dart';
-import 'package:smartqueue/pages/auth/login_page.dart';
+
 
 
 class AdminEmaiverifyPage extends StatefulWidget {
