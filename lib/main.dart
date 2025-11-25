@@ -22,3 +22,4 @@ class QueueEaseApp extends StatelessWidget {
     );
   }
 }
+

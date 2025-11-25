@@ -131,3 +131,4 @@ class _UserScanPageState extends State<UserScanPage> {
     );
   }
 }
+

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; // next page for admin flow
-import 'package:smartqueue/pages/user_home.dart';
-import 'admin_home.dart';
+import 'package:smartqueue/pages/user/user_home.dart';
+import 'admin/admin_home.dart';
 
 class RoleSelectionPage extends StatelessWidget {
   const RoleSelectionPage({super.key});
@@ -139,3 +139,4 @@ class RoleSelectionPage extends StatelessWidget {
     );
   }
 }
+

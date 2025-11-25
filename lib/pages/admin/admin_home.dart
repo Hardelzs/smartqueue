@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:smartqueue/pages/user_queue_infopage.dart';
-import 'package:smartqueue/pages/user_scan_page.dart';
+import 'package:smartqueue/pages/admin/admin_monitor_page.dart';
 
+import 'admin_setup_page.dart';
 
-class UserHome extends StatefulWidget {
-  const UserHome({super.key});
+class AdminHome extends StatefulWidget {
+  const AdminHome({super.key});
 
   @override
-  State<UserHome> createState() => _UserHomeState();
+  State<AdminHome> createState() => _AdminHomeState();
 }
 
-class _UserHomeState extends State<UserHome> {
+class _AdminHomeState extends State<AdminHome> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = const [
-    UserScanPage(),
-    UserQueueInfoPage(
-      estimatedWait: Duration(minutes: 20),
-    ), // For Scan page
+    AdminSetupPage(),
+    AdminMonitorPage(),
+    Placeholder(), // For Scan page
     Placeholder(), // For Profile page
   ];
 
@@ -48,9 +47,10 @@ class _UserHomeState extends State<UserHome> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _navItem(Icons.qr_code_scanner, "Scan", 0),
+          _navItem(Icons.home, "Home", 0),
           _navItem(Icons.list, "Queue", 1),
-          _navItem(Icons.person, "Profile", 2),
+          _navItem(Icons.qr_code_scanner, "Scan", 2),
+          _navItem(Icons.person, "Profile", 3),
         ],
       ),
     );

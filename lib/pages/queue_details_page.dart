@@ -199,3 +199,4 @@ class _QueueDetailsPageState extends State<QueueDetailsPage> {
     );
   }
 }
+

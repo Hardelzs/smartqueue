@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:smartqueue/pages/emailverify_page.dart';
-import '../services/api_service.dart';
+import 'package:smartqueue/pages/auth/emailverify_page.dart';
+import 'package:smartqueue/services/api_service.dart';
 import 'login_page.dart';
 
 class SignupPage extends StatefulWidget {
@@ -216,3 +216,4 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 }
+

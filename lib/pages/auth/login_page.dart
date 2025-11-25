@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smartqueue/pages/role_selection_page.dart';
-import '../services/api_service.dart';
+import 'package:smartqueue/services/api_service.dart';
 import 'signup_page.dart';
-import 'verifypassword_page.dart'; // added import
+import 'forgot_password_request_page.dart'; // added import
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -222,3 +222,4 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:smartqueue/pages/login_page.dart';
-import 'role_selection_page.dart';
+import 'package:smartqueue/pages/auth/login_page.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -147,3 +146,4 @@ class _WelcomePageState extends State<WelcomePage>
     );
   }
 }
+

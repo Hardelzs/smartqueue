@@ -2,15 +2,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'reserpassword_page.dart';
+import 'reset_password_verify_page.dart';
 
-const String API_BASE = 'https://queueless-7el4.onrender.com'; // adjust if needed
+const String API_BASE =
+    'https://queueless-7el4.onrender.com'; // adjust if needed
 
 class ForgotPasswordRequestPage extends StatefulWidget {
   const ForgotPasswordRequestPage({super.key});
 
   @override
-  State<ForgotPasswordRequestPage> createState() => _ForgotPasswordRequestPageState();
+  State<ForgotPasswordRequestPage> createState() =>
+      _ForgotPasswordRequestPageState();
 }
 
 class _ForgotPasswordRequestPageState extends State<ForgotPasswordRequestPage> {
@@ -50,11 +52,15 @@ class _ForgotPasswordRequestPageState extends State<ForgotPasswordRequestPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ResetPasswordVerifyPage(email: email),
+            builder: (_) =>
+                ResetPasswordVerifyPage(email: email), // Changed this
           ),
         );
       } else {
-        setState(() => _error = 'Failed to initiate reset. Check the email and try again.');
+        setState(
+          () => _error =
+              'Failed to initiate reset. Check the email and try again.',
+        );
       }
     } catch (e) {
       setState(() => _error = 'Request failed: $e');
@@ -79,9 +85,18 @@ class _ForgotPasswordRequestPageState extends State<ForgotPasswordRequestPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Enter your email', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600)),
+              Text(
+                'Enter your email',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 12),
-              Text('We will send a verification code to reset your password', style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey)),
+              Text(
+                'We will send a verification code to reset your password',
+                style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+              ),
               const SizedBox(height: 24),
               TextField(
                 controller: _emailController,
@@ -92,7 +107,9 @@ class _ForgotPasswordRequestPageState extends State<ForgotPasswordRequestPage> {
                 ),
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   errorText: _error,
                 ),
               ),
@@ -102,8 +119,17 @@ class _ForgotPasswordRequestPageState extends State<ForgotPasswordRequestPage> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: _loading ? null : _sendRequest,
-                  style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                  child: _loading ? const CircularProgressIndicator(color: Colors.white) : Text('Send code', style: GoogleFonts.poppins(fontSize: 16)),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: _loading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          'Send code',
+                          style: GoogleFonts.poppins(fontSize: 16),
+                        ),
                 ),
               ),
             ],
@@ -113,3 +139,4 @@ class _ForgotPasswordRequestPageState extends State<ForgotPasswordRequestPage> {
     );
   }
 }
+

@@ -1,37 +1,40 @@
 import 'package:flutter/material.dart';
-import 'admin_setup_page.dart';
-import 'admin_monitor_page.dart';
+import './admin_setup_page.dart';
+import './admin_monitor_page.dart';
 
-class AdminHome extends StatefulWidget {
-  const AdminHome({super.key});
+class AdminNavBar extends StatefulWidget {
+  const AdminNavBar({super.key});
 
   @override
-  State<AdminHome> createState() => _AdminHomeState();
+  State<AdminNavBar> createState() => _AdminNavBarState();
 }
 
-class _AdminHomeState extends State<AdminHome> {
+class _AdminNavBarState extends State<AdminNavBar> {
   int _selectedIndex = 0;
 
+  // 👇 All your pages live here
   final List<Widget> _pages = const [
-    AdminSetupPage(),
+    AdminSetupPage(), // 🏠 Home/Setup page
     AdminMonitorPage(),
-    Placeholder(), // For Scan page
-    Placeholder(), // For Profile page
+    Center(child: Text('Scan Page')),
+    Center(child: Text('Profile Page')),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_selectedIndex],
-      bottomNavigationBar: _buildBottomNavBar(),
+      bottomNavigationBar: _buildBottomNavBar(), //
       backgroundColor: Colors.grey[100],
     );
   }
 
+  // 👇 This builds the bottom navbar design
   Widget _buildBottomNavBar() {
     return Container(
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+      height: 75,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
@@ -64,21 +67,29 @@ class _AdminHomeState extends State<AdminHome> {
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ), // Adjusted padding
         decoration: BoxDecoration(
           color: isActive ? Colors.teal.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
-            Icon(icon, color: isActive ? Colors.teal : Colors.grey[600]),
+            Icon(
+              icon,
+              color: isActive ? Colors.teal : Colors.grey[600],
+              size: 28, // Increased icon size from default 24
+            ),
             if (isActive) ...[
-              const SizedBox(width: 6),
+              const SizedBox(width: 8), // Slightly increased spacing
               Text(
                 label,
                 style: const TextStyle(
                   color: Colors.teal,
                   fontWeight: FontWeight.w600,
+                  fontSize: 16, // Added font size to match new proportions
                 ),
               ),
             ],
@@ -88,3 +99,4 @@ class _AdminHomeState extends State<AdminHome> {
     );
   }
 }
+

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smartqueue/pages/admin_navbar.dart';
+import 'package:smartqueue/pages/admin/admin_navbar.dart';
 
 // import './queue_details_page.dart';
 
@@ -205,3 +205,4 @@ class _AdminMonitorPageState extends State<AdminMonitorPage> {
     );
   }
 }
+
