@@ -50,7 +50,7 @@ class _ForgotPasswordRequestPageState extends State<ForgotPasswordRequestPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ResetPasswordPage(email: email),
+            builder: (_) => ResetPasswordVerifyPage(email: email),
           ),
         );
       } else {
