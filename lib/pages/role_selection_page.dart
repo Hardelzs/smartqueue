@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; // next page for admin flow
 import 'package:smartqueue/pages/admin/admin_login_page.dart';
+// import 'package:smartqueue/pages/admin/admin_setup_page.dart';
 import 'package:smartqueue/pages/user/user_home.dart';
 
 class RoleSelectionPage extends StatelessWidget {
@@ -50,6 +51,7 @@ class RoleSelectionPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const AdminLoginPage()),
+                    // MaterialPageRoute(builder: (context) => const AdminSetupPage()),
                   );
                 },
               ),

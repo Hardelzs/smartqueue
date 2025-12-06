@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminSetupPage extends StatefulWidget {
   const AdminSetupPage({super.key});
@@ -14,20 +17,134 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
   final _formKey = GlobalKey<FormState>();
   final _orgController = TextEditingController();
   final _durationController = TextEditingController();
+  bool _isLoading = false;
 
   String? _generatedCode;
+  String? _authToken;
+  int? _orgId; // Add this
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAuthToken();
+    _loadOrgId(); // Add this
+  }
+
+  // Load stored auth token from SharedPreferences
+  Future<void> _loadAuthToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _authToken = prefs.getString('auth_token');
+      setState(() {});
+      if (_authToken == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No token found. Please login first.')),
+        );
+      }
+    } catch (e) {
+      print('Error loading token: $e');
+    }
+  }
+
+  // Load stored orgId from SharedPreferences
+  Future<void> _loadOrgId() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _orgId = prefs.getInt('org_id');
+      setState(() {});
+      if (_orgId == null) {
+        print('Warning: No orgId found');
+      }
+    } catch (e) {
+      print('Error loading orgId: $e');
+    }
+  }
 
   void _generateQR() {
     if (_formKey.currentState!.validate()) {
       final orgName = _orgController.text.trim();
       final duration = _durationController.text.trim();
 
-      // Generate a unique queue code (for now just combine org + timestamp)
-      final code = "$orgName-${DateTime.now().millisecondsSinceEpoch}";
+      _createQueue(orgName, duration);
+    }
+  }
 
-      setState(() {
-        _generatedCode = code;
-      });
+  static const String apiBase = 'https://queueless-7el4.onrender.com';
+
+  Future<void> _createQueue(String name, String durationHours) async {
+    if (_authToken == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No authentication token found. Please login first.'),
+        ),
+      );
+      return;
+    }
+
+    if (_orgId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Organization ID not found. Please login again.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final estimatedInterval = (int.tryParse(durationHours) ?? 0) * 60;
+      final body = {
+        "name": name,
+        "estimatedInterval": estimatedInterval,
+        "orgId": _orgId, // Use the loaded orgId
+      };
+
+      final uri = Uri.parse('$apiBase/api/v1/queue');
+      final res = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_authToken',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        String code;
+        try {
+          final map = jsonDecode(res.body);
+          code =
+              map['code']?.toString() ??
+              map['data']?['code']?.toString() ??
+              "$name-${DateTime.now().millisecondsSinceEpoch}";
+        } catch (_) {
+          code = "$name-${DateTime.now().millisecondsSinceEpoch}";
+        }
+        setState(() => _generatedCode = code);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Queue created successfully')),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Failed to create queue (${res.statusCode}): ${res.body}',
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
@@ -131,9 +248,16 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
                     ),
                   ),
                   cursorColor: Colors.black,
-                  validator: (value) => value!.isEmpty
-                      ? "Please enter an organization name"
-                      : null,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter duration in hours";
+                    }
+                    if (int.tryParse(value) == null) {
+                      return "Please enter a valid number";
+                    }
+                    return null;
+                  },
                 ),
 
                 const SizedBox(height: 40),
@@ -163,15 +287,24 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      onPressed: _generateQR,
-                      child: Text(
-                        "Generate QR Code",
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
-                      ),
+                      onPressed: _isLoading ? null : _generateQR,
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              "Generate QR Code",
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -298,4 +431,3 @@ class _AdminSetupPageState extends State<AdminSetupPage> {
     );
   }
 }
-

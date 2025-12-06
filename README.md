@@ -168,3 +168,16 @@ const String API_BASE = 'https://queueless-7el4.onrender.com';
 ## License
 
 MIT
+
+
+
+
+Normal Password 
+ --- 
+username -- hardelz
+password -- @Aduragbemi2325
+
+Admin Password
+ --- 
+ username -- way
+ password -- foodonly

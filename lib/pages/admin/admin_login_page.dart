@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartqueue/pages/admin/admin_home.dart';
 import 'package:smartqueue/pages/admin/admin_signup_page.dart';
 import 'package:smartqueue/pages/auth/forgot_password_request_page.dart';
@@ -52,13 +53,44 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
         body: jsonEncode({'email': email, 'password': password}),
       );
 
-      if (res.statusCode == 200) {
-        final body = jsonDecode(res.body);
-        // you can store token from body['token'] here if backend returns it
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const AdminHome()),
-        );
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        try {
+          final body = jsonDecode(res.body);
+          final token =
+              body['token'] ?? body['data']?['token'] ?? body['access_token'];
+
+          // Extract orgId from response
+          final orgId =
+              body['orgId'] ??
+              body['data']?['orgId'] ??
+              body['org_id'] ??
+              body['data']?['org_id'];
+
+          if (token != null) {
+            // Save token and orgId to SharedPreferences
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('auth_token', token);
+
+            // Save orgId if it exists
+            if (orgId != null) {
+              await prefs.setInt('org_id', int.parse(orgId.toString()));
+              print('Saved orgId: $orgId');
+            } else {
+              print('Warning: No orgId in response. Response: $body');
+            }
+
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Login successful')));
+            // Navigate to setup page
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const AdminHome()),
+            );
+          }
+        } catch (e) {
+          print('Error parsing response: $e');
+        }
       } else {
         String msg = 'Login failed';
         try {
