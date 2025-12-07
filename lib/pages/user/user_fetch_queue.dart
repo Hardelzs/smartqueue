@@ -26,6 +26,7 @@ class _QueueDashboardPageState extends State<QueueDashboardPage> {
       final prefs = await SharedPreferences.getInstance();
       _orgId = prefs.getInt('org_id');
       setState(() {});
+
       if (_orgId != null) {
         fetchQueues();
       } else {
@@ -42,16 +43,30 @@ class _QueueDashboardPageState extends State<QueueDashboardPage> {
     if (_orgId == null) return;
 
     setState(() => _isLoading = true);
+
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
       final response = await http.post(
         Uri.parse('https://queueless-7el4.onrender.com/api/v1/org/queue'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'orgId': _orgId, 'perPage': perPage, 'page': currentPage}),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: json.encode({
+          'orgId': _orgId,
+          'perPage': perPage,
+          'page': currentPage,
+        }),
       );
 
+      print('Response: ${response.body}');
+
       if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
         setState(() {
-          queues = json.decode(response.body);
+          queues = decoded['data']['queues'];
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -67,10 +82,16 @@ class _QueueDashboardPageState extends State<QueueDashboardPage> {
     }
   }
 
-  void joinQueue(String queueId) async {
+  void joinQueue(int queueId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     final response = await http.post(
       Uri.parse('https://queueless-7el4.onrender.com/api/v1/org/queue/join'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
       body: json.encode({'queueId': queueId}),
     );
 
@@ -80,7 +101,8 @@ class _QueueDashboardPageState extends State<QueueDashboardPage> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error joining queue: ${response.statusCode}')),
+        SnackBar(content: Text(
+            'Error joining queue: ${response.statusCode} — ${response.body}')),
       );
     }
   }
@@ -100,26 +122,25 @@ class _QueueDashboardPageState extends State<QueueDashboardPage> {
                           itemCount: queues.length,
                           itemBuilder: (context, index) {
                             final queue = queues[index];
+
                             return Card(
                               child: ListTile(
                                 title: Text(queue['name']),
-                                subtitle: Text('Status: ${queue['status']}'),
-                                trailing: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('Users: ${queue['userCount'] ?? 0}'),
-                                    Text('Wait Time: ${queue['waitTime'] ?? 0} mins'),
-                                    ElevatedButton(
-                                      onPressed: () => joinQueue(queue['id']),
-                                      child: const Text('Join'),
-                                    ),
-                                  ],
+                                subtitle: Text(
+                                  'Estimated Interval: ${queue['estimatedInterval']} secs',
+                                ),
+                                trailing: ElevatedButton(
+                                  onPressed: () =>
+                                      joinQueue(queue['queueId']),
+                                  child: const Text('Join'),
                                 ),
                               ),
                             );
                           },
                         ),
                 ),
+
+                // Pagination Buttons
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
@@ -130,8 +151,8 @@ class _QueueDashboardPageState extends State<QueueDashboardPage> {
                             ? () {
                                 setState(() {
                                   currentPage--;
-                                  fetchQueues();
                                 });
+                                fetchQueues();
                               }
                             : null,
                         child: const Text('Previous'),
@@ -140,8 +161,8 @@ class _QueueDashboardPageState extends State<QueueDashboardPage> {
                         onPressed: () {
                           setState(() {
                             currentPage++;
-                            fetchQueues();
                           });
+                          fetchQueues();
                         },
                         child: const Text('Next'),
                       ),

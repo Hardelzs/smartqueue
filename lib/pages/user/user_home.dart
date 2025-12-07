@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smartqueue/pages/user/user_queue_infopage.dart';
-import 'package:smartqueue/pages/user/user_scan_page.dart';
+import 'package:smartqueue/pages/user/user_fetch_queue.dart';
 
 
 class UserHome extends StatefulWidget {
@@ -13,12 +13,12 @@ class UserHome extends StatefulWidget {
 class _UserHomeState extends State<UserHome> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
-    // UserScanPage(),
+  final List<Widget> _pages =  [
+  
     QueueDashboardPage(),
     UserQueueInfoPage(
       estimatedWait: Duration(minutes: 20),
-    ), // For Scan page
+    ), 
     Placeholder(), // For Profile page
     
   ];
