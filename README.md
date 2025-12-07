@@ -179,5 +179,6 @@ password -- @Aduragbemi2325
 
 Admin Password
  --- 
+ email    -- adewaleezekiel43@gmail.com
  username -- way
  password -- foodonly

@@ -14,7 +14,8 @@ class _UserHomeState extends State<UserHome> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = const [
-    UserScanPage(),
+    // UserScanPage(),
+    QueueDashboardPage(),
     UserQueueInfoPage(
       estimatedWait: Duration(minutes: 20),
     ), // For Scan page
