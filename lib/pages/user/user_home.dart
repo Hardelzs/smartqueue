@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smartqueue/pages/user/user_profile.dart';
 import 'package:smartqueue/pages/user/user_queue_infopage.dart';
 import 'package:smartqueue/pages/user/user_fetch_queue.dart';
 
@@ -19,7 +20,7 @@ class _UserHomeState extends State<UserHome> {
     UserQueueInfoPage(
       estimatedWait: Duration(minutes: 20),
     ), 
-    Placeholder(), // For Profile page
+    UserProfilePage(), // For Profile page
     
   ];
 

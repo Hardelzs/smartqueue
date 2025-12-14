@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smartqueue/pages/admin/admin_monitor_page.dart';
+import 'package:smartqueue/pages/admin/admin_profile.dart';
 
 import 'admin_setup_page.dart';
 
@@ -17,7 +18,7 @@ class _AdminHomeState extends State<AdminHome> {
     AdminSetupPage(),
     AdminMonitorPage(),
     Placeholder(), // For Scan page
-    Placeholder(), // For Profile page
+    AdminProfilePage(), // For Profile page
   ];
 
   @override
